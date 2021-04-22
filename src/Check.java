@@ -1,6 +1,6 @@
 public class Check {
 
-    public boolean sprawdz(int tab[][], int sum2) {
+    public boolean check(int tab[][], int sum2) {
         int[][] tabl = new int[tab.length][tab.length];
 
         for (int i = 0; i < tab.length; i++) {

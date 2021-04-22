@@ -4,13 +4,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Main extends JFrame {
-    static boolean kolejka = true, ktoGra = true;
+    static boolean turn = true, whoPlay = true;
     int size = 15;
     int[][] tab = new int[size][size];
     Check x = new Check();
-    int licznik = 0;
-    static int liczX = 0, liczO = 0;
-    static String kto = "X";
+    int counter = 0;
+    static int counterX = 0, counterO = 0;
+    static String who = "X";
 
     public Main() {
         setSize(760, 760);
@@ -18,54 +18,34 @@ public class Main extends JFrame {
         setTitle("Gomoku");
         setLocation(getToolkit().getScreenSize().width / 2 - this.getWidth() / 2, getToolkit().getScreenSize().height / 2 - this.getHeight() / 2);
         setLayout(new GridLayout(size, size));
-        if (ktoGra)
-            kto = "X";
+        if (whoPlay)
+            who = "X";
         else
-            kto = "O";
-        JOptionPane.showMessageDialog(null, "Zaczyna   " + kto);
+            who = "O";
+        JOptionPane.showMessageDialog(null, "Zaczyna   " + who);
         for (int i = 0; i < size * size; i++) {
-            JButton przycisk = new JButton("");
-            add(przycisk);
-            przycisk.setName("" + i);
-            przycisk.setFont(new Font("SansSerif", Font.BOLD, 20));
-            przycisk.addActionListener(new ActionListener() {
+            JButton button = new JButton("");
+            add(button);
+            button.setName("" + i);
+            button.setFont(new Font("SansSerif", Font.BOLD, 20));
+            button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (przycisk.getText() == "") {
-                        if (kolejka == true) {
-                            przycisk.setText("X");
-                            tab[Integer.parseInt(przycisk.getName()) % 15][Integer.parseInt(przycisk.getName()) / size] = 1;
-                            kolejka = false;
-                            if (x.sprawdz(tab, 5)) {
-                                liczX++;
-                                JOptionPane.showMessageDialog(null, "WYGRAL GRACZ  X \n\n Liczba zwycięstw gracza X:   " + liczX + "\n Liczba zwycięstw gracza O:   " + liczO);
-                                ktoGra = !ktoGra;
-                                int odp = JOptionPane.showConfirmDialog(null, "NOWA GRA", "Czy chcesz zagrać ponownie ?", JOptionPane.YES_NO_OPTION);
-                                if (odp == JOptionPane.YES_OPTION) {
-                                    setVisible(false);
-                                    new Main();
-                                } else if (odp == JOptionPane.NO_OPTION)
-                                    dispose();
-                            }
+                    if (button.getText() == "") {
+                        if (turn == true) {
+                            button.setText("X");
+                            tab[Integer.parseInt(button.getName()) % 15][Integer.parseInt(button.getName()) / size] = 1;
+                            checkWin(5);
+                            turn = false;
                         } else {
-                            przycisk.setText("O");
-                            tab[Integer.parseInt(przycisk.getName()) % 15][Integer.parseInt(przycisk.getName()) / size] = 2;
-                            if (x.sprawdz(tab, 10)) {
-                                liczO++;
-                                JOptionPane.showMessageDialog(null, "WYGRAL GRACZ  O\n\n Liczba Zwycięstw gracza O:   " + liczO + "\n Liczba zwycięstw gracza X:   " + liczX);
-                                ktoGra = !ktoGra;
-                                int odp = JOptionPane.showConfirmDialog(null, "NOWA GRA", "pytanie", JOptionPane.YES_NO_OPTION);
-                                if (odp == JOptionPane.YES_OPTION) {
-                                    setVisible(false);
-                                    new Main();
-                                } else if (odp == JOptionPane.NO_OPTION)
-                                    dispose();
-                            }
-                            kolejka = true;
+                            button.setText("O");
+                            tab[Integer.parseInt(button.getName()) % 15][Integer.parseInt(button.getName()) / size] = 2;
+                            checkWin(10);
+                            turn = true;
                         }
-                        licznik++;
-                        if (licznik == size * size && !x.sprawdz(tab, 5)) {
-                            ktoGra = !ktoGra;
+                        counter++;
+                        if (counter == size * size && !x.check(tab, 5)) {
+                            whoPlay = !whoPlay;
                             JOptionPane.showMessageDialog(null, "REMIS");
                             int odp = JOptionPane.showConfirmDialog(null, "NOWA GRA", "pytanie", JOptionPane.YES_NO_OPTION);
                             if (odp == JOptionPane.YES_OPTION) {
@@ -74,13 +54,28 @@ public class Main extends JFrame {
                             } else if (odp == JOptionPane.NO_OPTION)
                                 dispose();
                         }
-
                     }
-
-
                 }
-
             });
+        }
+    }
+
+    public void checkWin(int sum2) {
+        if (x.check(tab, sum2)) {
+            if (sum2 == 10) {
+                counterO++;
+                JOptionPane.showMessageDialog(null, "WYGRAL GRACZ  O\n\n Liczba Zwycięstw gracza O:   " + counterO + "\n Liczba zwycięstw gracza X:   " + counterX);
+            } else {
+                counterX++;
+                JOptionPane.showMessageDialog(null, "WYGRAL GRACZ  X\n\n Liczba Zwycięstw gracza X:   " + counterX + "\n Liczba zwycięstw gracza O:   " + counterO);
+            }
+            whoPlay = !whoPlay;
+            int odp = JOptionPane.showConfirmDialog(null, "NOWA GRA", "pytanie", JOptionPane.YES_NO_OPTION);
+            if (odp == JOptionPane.YES_OPTION) {
+                setVisible(false);
+                new Main();
+            } else if (odp == JOptionPane.NO_OPTION)
+                dispose();
         }
     }
 
@@ -91,6 +86,5 @@ public class Main extends JFrame {
                 new Main();
             }
         });
-
     }
 }
